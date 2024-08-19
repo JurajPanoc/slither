@@ -1,0 +1,37 @@
+<Button>:
+    background_normal:""
+    background_color: (0, 0, 0, 1)
+    background_down: ""
+
+<SlLayout>:
+    text: text
+    StackLayout:
+        size: root.width, root.height
+        Button:
+            text:"File"
+            size_hint:.1,.05
+            on_press: root.file_button()
+        Button: 
+            text:"[u]S[/u]ave"
+            markup:True
+            size_hint:.1,.05
+            on_press: root.save_button()
+        Button: 
+            text:"Open"
+            size_hint:.1,.05
+            on_press: root.open_button()
+        Label:
+            id: info_label
+            text: "Hello!"
+            foreground_color: (1, 1, 1, 1)
+            background_color: (0, 0, 0, 1)
+            text_size: self.size
+            halign: "left"
+            valign: "center"
+            size_hint:.5,.05
+        TextInput:
+            id:text
+            foreground_color: (1, 1, 1, 1)
+            background_color: (0, 0, 0, 1)
+            auto_indent:True
+            focus:True
