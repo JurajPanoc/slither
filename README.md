@@ -1,3 +1,3 @@
 # SLITHER
 
-A simple text editor writted in python and kivy
+A simple text editor written in python and kivy
