@@ -25,7 +25,7 @@
     selection_color: (1, 0, 0, 0.2)
 
 <QuitPopup@Popup>:
-    title: "[!] Alert"
+    title: "[ ! ] Alert"
     size_hint: 0.5, 0.5
     background_normal:""
     background_color: (0, 0, 0, 1)
@@ -74,7 +74,8 @@
             size_hint:.1,.05
             on_press: root.save_as_file()
         Button: 
-            text:"Quit"
+            text:"[u]Q[/u]uit"
+            markup:True
             size_hint:.1,.05
             on_press: Factory.QuitPopup().open()
         TextInput:

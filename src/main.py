@@ -1,14 +1,23 @@
+#NOTE: config is up here because it should be the first thing that is run in the file 
+from kivy import Config # type: ignore
+Config.set('graphics', 'minimum_width', '600') 
+Config.set('graphics', 'minimum_height', '400')
+
 from kivy.app import App # type: ignore
 from kivy.uix.widget import Widget # type: ignore
 from kivy.properties import ObjectProperty # type: ignore
 from kivy.lang import Builder # type: ignore
-from kivy.uix.dropdown import DropDown # type: ignore
+from kivy.uix.popup import Popup # type: ignore
 from plyer import filechooser # type: ignore
 from kivy.core.window import Window # type: ignore
 from os.path import exists
 
 
 Builder.load_file("main.kv")
+
+
+class QuitPopup(Popup): # defined also here just so the python doesn't freak out and throw an error
+    pass
 
 
 class SlLayout(Widget): 
@@ -22,7 +31,7 @@ class SlLayout(Widget):
         elif "ctrl" in modifier and codepoint == "o":
             self.open_file()
         elif "ctrl" in modifier and codepoint == "q":
-            self.quit_program() #TODO: figure out how to trigger a popup from kv file here
+            QuitPopup().open()
 
     def reset_info_label(self, dt):
         self.ids.info_label.text = "..."
