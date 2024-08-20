@@ -70,6 +70,10 @@
             size_hint:.1,.05
             on_press: root.open_file()
         Button: 
+            text:"Open dir"
+            size_hint:.1,.05
+            on_press: root.open_directory()
+        Button: 
             text:"Save as"
             size_hint:.1,.05
             on_press: root.save_as_file()
@@ -82,7 +86,7 @@
             id:text
             auto_indent:True
             focus:True
-            size_hint:1.0,.9
+            size_hint:1.0,.85
         TextInput:
             id: filename_input
             text: "No file currently open"
@@ -93,8 +97,21 @@
             valign: "center"
             size_hint:.5,.05
         Label:
-            id: info_label
+            canvas.before:
+                Color:
+                    rgba: (1, 1, 1, 1)
+                Line:
+                    rectangle: self.x, self.y, self.width, self.height
+            id: directory_label
+            text: "No open directory"
             text_size: self.size
             halign: "left"
             valign: "center"
             size_hint:.5,.05
+        Label:
+            id: info_label
+            text: "..."
+            text_size: self.size
+            halign: "left"
+            valign: "center"
+            size_hint:1,.05

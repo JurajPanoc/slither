@@ -1,5 +1,5 @@
-#NOTE: config is up here because it should be the first thing that is run in the file 
 from kivy import Config # type: ignore
+#NOTE: config is up here because it should be the first thing that is run in the file 
 Config.set('graphics', 'minimum_width', '600') 
 Config.set('graphics', 'minimum_height', '400')
 
@@ -23,9 +23,10 @@ class QuitPopup(Popup): # defined also here just so the python doesn't freak out
 
 
 class SlLayout(Widget): 
-    text = ObjectProperty(None)
-    info = ObjectProperty(None)
+    text: str = ObjectProperty(None)
+    info: str = ObjectProperty(None)
     current_file_path: Path = ObjectProperty(None)
+    working_directory: Path = ObjectProperty(None)
 
     def on_keyboard(self, window, key, scancode, codepoint, modifier):
         if "ctrl" in modifier and codepoint == "s":
@@ -44,14 +45,22 @@ class SlLayout(Widget):
         self.ids.info_label.text = "File has been saved successfully!"
     
     def open_file(self):
-        filechooser.open_file(on_selection=self.selected_to_open, 
+        filechooser.open_file(on_selection=self.selected_to_open,
+                              path=str(self.working_directory),
                               filters=[["All files", "*"], ["Supported files", "*.hdz", "*.txt"]],
                               title="Choose a file to open",
                               multiple=False)
     
+    def open_directory(self):
+        filechooser.choose_dir(on_selection=self.selected_to_open_dir,
+                             path=str(self.working_directory),
+                             title="select a working directory",
+                             multiple=False)
+
     def save_as_file(self):
         filechooser.save_file(on_selection=self.selected_to_save_as,
                               title="Save as... (dont forget the file extension)",
+                              path=str(self.working_directory),
                               multiple=False,
                               filters=[["All files"], ["Text Document", "*.txt"], ["Hadzik programming language file", "*.hdz"]]) #FIXME:for some reason doesn't actually give the selected type to the file
 
@@ -72,10 +81,21 @@ class SlLayout(Widget):
             self.text.text = file.read()
         self.ids.filename_input.text = self.current_file_path.name
         self.ids.info_label.text = "File has been opened successfully!"
+    
+    def selected_to_open_dir(self, selection):
+        if not selection:
+            return
+        self.working_directory = Path(selection[0])
+        self.ids.directory_label.text = str(self.working_directory)
 
     def rename_file(self):
         if self.current_file_path is None or not self.current_file_path.exists():
-            self.save_as_file()
+            if self.working_directory is None:
+                self.ids.info_label.text = "File cannot be created! (not inside of any directory)"
+                return
+            with open(str(self.working_directory) + self.ids.filename_input.text, "w") as file:
+                file.write(self.text.text)
+            self.ids.info_label.text = "File has been created successfully!"
         else:
             print("renamed", self.current_file_path, str(self.current_file_path.parent) +  "\\" + self.ids.filename_input.text)
             rename(self.current_file_path, str(self.current_file_path.parent) +  "\\" + self.ids.filename_input.text)
