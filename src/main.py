@@ -10,7 +10,9 @@ from kivy.lang import Builder # type: ignore
 from kivy.uix.popup import Popup # type: ignore
 from plyer import filechooser # type: ignore
 from kivy.core.window import Window # type: ignore
-from os.path import exists
+
+from pathlib import Path
+from os import rename
 
 
 Builder.load_file("main.kv")
@@ -23,7 +25,7 @@ class QuitPopup(Popup): # defined also here just so the python doesn't freak out
 class SlLayout(Widget): 
     text = ObjectProperty(None)
     info = ObjectProperty(None)
-    current_file_path = ObjectProperty(None)
+    current_file_path: Path = ObjectProperty(None)
 
     def on_keyboard(self, window, key, scancode, codepoint, modifier):
         if "ctrl" in modifier and codepoint == "s":
@@ -33,20 +35,17 @@ class SlLayout(Widget):
         elif "ctrl" in modifier and codepoint == "q":
             QuitPopup().open()
 
-    def reset_info_label(self, dt):
-        self.ids.info_label.text = "..."
-
     def save_file(self):
-        if self.current_file_path is None or not exists(self.current_file_path):
+        if self.current_file_path is None or not self.current_file_path.exists():
             self.save_as_file()
             return
         with open(self.current_file_path, "w") as file:
             file.write(self.text.text)
-        self.ids.info_label.text = "File has been successfully saved!"
+        self.ids.info_label.text = "File has been saved successfully!"
     
     def open_file(self):
         filechooser.open_file(on_selection=self.selected_to_open, 
-                              filters=[["Supported files", "*.hdz", "*.txt"]],
+                              filters=[["All files", "*"], ["Supported files", "*.hdz", "*.txt"]],
                               title="Choose a file to open",
                               multiple=False)
     
@@ -59,18 +58,28 @@ class SlLayout(Widget):
     def selected_to_save_as(self, selection):
         if not selection:
             return
-        self.current_file_path = selection[0]
+        self.current_file_path = Path(selection[0])
         with open(self.current_file_path, "w") as file:
             file.write(self.text.text)
-        self.ids.info_label.text = f"File saved successfully: {selection[0]}"
+        self.ids.info_label.text = f"Saved here: {selection[0]}"
+        self.ids.filename_input.text = self.current_file_path.name
     
     def selected_to_open(self, selection):
         if not selection:
             return
-        self.current_file_path = selection[0]
+        self.current_file_path = Path(selection[0])
         with open(self.current_file_path, "r") as file:
             self.text.text = file.read()
-        self.ids.info_label.text = f"{selection[0].split("\\")[-1]}"
+        self.ids.filename_input.text = self.current_file_path.name
+        self.ids.info_label.text = "File has been opened successfully!"
+
+    def rename_file(self):
+        if self.current_file_path is None or not self.current_file_path.exists():
+            self.save_as_file()
+        else:
+            print("renamed", self.current_file_path, str(self.current_file_path.parent) +  "\\" + self.ids.filename_input.text)
+            rename(self.current_file_path, str(self.current_file_path.parent) +  "\\" + self.ids.filename_input.text)
+            self.ids.info_label.text = "File has been renamed successfully!"
 
     def file_button(self):
         file_content = self.text.text

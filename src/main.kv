@@ -83,12 +83,18 @@
             auto_indent:True
             focus:True
             size_hint:1.0,.9
+        TextInput:
+            id: filename_input
+            text: "No file currently open"
+            text_size: self.size
+            multiline: False
+            on_text_validate: root.rename_file()
+            halign: "left"
+            valign: "center"
+            size_hint:.5,.05
         Label:
             id: info_label
-            text: "..."
-            foreground_color: (1, 1, 1, 1)
-            background_color: (0, 0, 0, 1)
             text_size: self.size
             halign: "left"
             valign: "center"
-            size_hint:1.0,.05
+            size_hint:.5,.05
