@@ -1,7 +1,55 @@
+#:kivy 2.3.0
+#:import Factory kivy.factory.Factory
+#TODO: fix line borders being buggy and dissapearing when scaling the menu
+
 <Button>:
+    canvas.before:
+        Color:
+            rgba: (1, 1, 1, 1)
+        Line:
+            rectangle: self.x, self.y, self.width, self.height + 1
+    background_normal:""
+    background_down: ""
+    background_color: (0, 0, 0, 1)
+
+<TextInput>:
+    canvas.before:
+        Color:
+            rgba: (1, 1, 1, 1)
+        Line:
+            rectangle: self.x, self.y, self.width, self.height
+    cursor_color: (1, 1, 1, 1)
+    foreground_color: (1, 1, 1, 1)
+    background_color: (0, 0, 0, 1)
+    background_normal:""
+    selection_color: (1, 0, 0, 0.2)
+
+<QuitPopup@Popup>:
+    title: "[!] Alert"
+    size_hint: 0.5, 0.5
     background_normal:""
     background_color: (0, 0, 0, 1)
-    background_down: ""
+    foreground_color: (1, 1, 1, 1)
+    separator_color: (1, 0, 0, 1)
+    StackLayout:
+        spacing: 28  # between Buttons
+        Label:
+            canvas.before:
+                Color:
+                    rgba: (1, 1, 1, 1)
+                Line:
+                    rectangle: self.x, self.y, self.width, self.height + 1
+            text: "Are you sure you want to close the program? \n(all unsaved changes will be lost)"
+            size_hint:1,.8
+        Button:
+            text: "Yes"
+            size_hint:.5,.2
+            on_release: app.stop()
+        
+        Button:
+            text: "Cancel"
+            size_hint:.5,.2
+            on_release: root.dismiss()
 
 <SlLayout>:
     text: text
@@ -15,23 +63,31 @@
             text:"[u]S[/u]ave"
             markup:True
             size_hint:.1,.05
-            on_press: root.save_button()
+            on_press: root.save_file()
         Button: 
-            text:"Open"
+            text:"[u]O[/u]pen"
+            markup:True
             size_hint:.1,.05
-            on_press: root.open_button()
+            on_press: root.open_file()
+        Button: 
+            text:"Save as"
+            size_hint:.1,.05
+            on_press: root.save_as_file()
+        Button: 
+            text:"Quit"
+            size_hint:.1,.05
+            on_press: Factory.QuitPopup().open()
+        TextInput:
+            id:text
+            auto_indent:True
+            focus:True
+            size_hint:1.0,.9
         Label:
             id: info_label
-            text: "Hello!"
+            text: "..."
             foreground_color: (1, 1, 1, 1)
             background_color: (0, 0, 0, 1)
             text_size: self.size
             halign: "left"
             valign: "center"
-            size_hint:.5,.05
-        TextInput:
-            id:text
-            foreground_color: (1, 1, 1, 1)
-            background_color: (0, 0, 0, 1)
-            auto_indent:True
-            focus:True
+            size_hint:1.0,.05
