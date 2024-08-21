@@ -10,6 +10,7 @@ from kivy.lang import Builder # type: ignore
 from kivy.uix.popup import Popup # type: ignore
 from plyer import filechooser # type: ignore
 from kivy.core.window import Window # type: ignore
+from kivy.clock import Clock # type: ignore
 
 from pathlib import Path
 from os import rename
@@ -28,6 +29,10 @@ class SlLayout(Widget):
     current_file_path: Path = ObjectProperty(None)
     working_directory: Path = ObjectProperty(None)
 
+    def reset_info(self, *args):
+        print("AAAAAAAAAAAA")
+        self.ids.info_label.text = "..."
+
     def on_keyboard(self, window, key, scancode, codepoint, modifier):
         if "ctrl" in modifier and codepoint == "s":
             self.save_file()
@@ -43,6 +48,7 @@ class SlLayout(Widget):
         with open(self.current_file_path, "w") as file:
             file.write(self.text.text)
         self.ids.info_label.text = "File has been saved successfully!"
+        Clock.schedule_once(self.reset_info, 8) #FIXME: find a way for them to not behave inconsistently (some are faster than others)
     
     def open_file(self):
         filechooser.open_file(on_selection=self.selected_to_open,
@@ -72,6 +78,7 @@ class SlLayout(Widget):
             file.write(self.text.text)
         self.ids.info_label.text = f"Saved here: {selection[0]}"
         self.ids.filename_input.text = self.current_file_path.name
+        Clock.schedule_once(self.reset_info, 3)
     
     def selected_to_open(self, selection):
         if not selection:
@@ -81,6 +88,7 @@ class SlLayout(Widget):
             self.text.text = file.read()
         self.ids.filename_input.text = self.current_file_path.name
         self.ids.info_label.text = "File has been opened successfully!"
+        Clock.schedule_once(self.reset_info, 3)
     
     def selected_to_open_dir(self, selection):
         if not selection:
@@ -93,6 +101,7 @@ class SlLayout(Widget):
             print("renamed", self.current_file_path, str(self.current_file_path.parent) +  "\\" + self.ids.filename_input.text)
             rename(self.current_file_path, str(self.current_file_path.parent) +  "\\" + self.ids.filename_input.text)
             self.ids.info_label.text = "File has been renamed successfully!"
+            Clock.schedule_once(self.reset_info, 3)
 
     def file_button(self):
         file_content = self.text.text
