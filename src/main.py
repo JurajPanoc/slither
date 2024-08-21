@@ -53,20 +53,20 @@ class SlLayout(Widget):
     
     def open_directory(self):
         filechooser.choose_dir(on_selection=self.selected_to_open_dir,
-                             path=str(self.working_directory),
                              title="select a working directory",
                              multiple=False)
 
     def save_as_file(self):
         filechooser.save_file(on_selection=self.selected_to_save_as,
                               title="Save as... (dont forget the file extension)",
-                              path=str(self.working_directory),
+                              path=str(self.working_directory) + "\\" + self.ids.filename_input.text,
                               multiple=False,
-                              filters=[["All files"], ["Text Document", "*.txt"], ["Hadzik programming language file", "*.hdz"]]) #FIXME:for some reason doesn't actually give the selected type to the file
+                              filters=[["All files"], ["Text Document", "*.txt"], ["Hadzik programming language file", "*.hdz"]])
 
     def selected_to_save_as(self, selection):
         if not selection:
             return
+        print(selection)
         self.current_file_path = Path(selection[0])
         with open(self.current_file_path, "w") as file:
             file.write(self.text.text)
@@ -89,14 +89,7 @@ class SlLayout(Widget):
         self.ids.directory_label.text = str(self.working_directory)
 
     def rename_file(self):
-        if self.current_file_path is None or not self.current_file_path.exists():
-            if self.working_directory is None:
-                self.ids.info_label.text = "File cannot be created! (not inside of any directory)"
-                return
-            with open(str(self.working_directory) + self.ids.filename_input.text, "w") as file:
-                file.write(self.text.text)
-            self.ids.info_label.text = "File has been created successfully!"
-        else:
+        if self.current_file_path is not None and self.current_file_path.exists():
             print("renamed", self.current_file_path, str(self.current_file_path.parent) +  "\\" + self.ids.filename_input.text)
             rename(self.current_file_path, str(self.current_file_path.parent) +  "\\" + self.ids.filename_input.text)
             self.ids.info_label.text = "File has been renamed successfully!"
