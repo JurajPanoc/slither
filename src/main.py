@@ -2,6 +2,7 @@ from kivy import Config # type: ignore
 #NOTE: config is up here because it should be the first thing that is run in the file 
 Config.set('graphics', 'minimum_width', '600') 
 Config.set('graphics', 'minimum_height', '400')
+Config.set('graphics', 'window_state', 'maximized') # starts maximized
 
 from kivy.app import App # type: ignore
 from kivy.uix.widget import Widget # type: ignore
@@ -17,7 +18,6 @@ from os import rename
 
 
 Builder.load_file("main.kv")
-
 
 class QuitPopup(Popup): # defined also here just so the python doesn't freak out and throw an error
     pass
@@ -112,6 +112,8 @@ class SlitherApp(App):
     def build(self):
         app = SlLayout()
         Window.bind(on_keyboard=app.on_keyboard)
+        #do this when adding fullscreen option
+        #Window.fullscreen = "auto"
         return app
 
 
