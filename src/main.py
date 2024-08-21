@@ -46,7 +46,7 @@ class SlLayout(Widget):
     
     def open_file(self):
         filechooser.open_file(on_selection=self.selected_to_open,
-                              path=str(self.working_directory),
+                              path=str(self.working_directory) if self.working_directory is not None else "",
                               filters=[["All files", "*"], ["Supported files", "*.hdz", "*.txt"]],
                               title="Choose a file to open",
                               multiple=False)
