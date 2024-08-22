@@ -1,5 +1,7 @@
 #:kivy 2.3.0
 #:import Factory kivy.factory.Factory
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+
 #TODO: fix line borders being buggy and dissapearing when scaling the menu
 
 <Mybutton>:
@@ -19,6 +21,18 @@
     background_normal:""
     selection_color: (1, 0, 0, 0.2)
 
+<TabbedPanelHeader>:
+    background_color: (1, 0, 0, 1) if self.state == "down" else (0, 0, 0, 1)
+
+<CheckboxSetting@BoxLayout>:
+    canvas.after:
+        Color:
+            rgba: (1, 1, 1, 1)
+        Line:
+            rectangle: self.x, self.y, self.width, self.height + 1
+    size_hint:1,.05
+    orientation: "horizontal"
+
 <QuitPopup@Popup>:
     title: "[ ! ] Alert"
     size_hint: 0.5, 0.5
@@ -36,12 +50,11 @@
                     rectangle: self.x, self.y, self.width, self.height + 1
             text: "Are you sure you want to close the program? \n(all unsaved changes will be lost)"
             size_hint:1,.8
-        Button:
+        Mybutton:
             text: "Yes"
             size_hint:.5,.2
             on_release: app.stop()
-        
-        Button:
+        Mybutton:
             text: "Cancel"
             size_hint:.5,.2
             on_release: root.dismiss()
@@ -118,7 +131,7 @@
 <SettingsScreen>:
     StackLayout:
         Mybutton:
-            text: '←'
+            text: '↩'
             font_size: root.height/20
             font_name: "DejaVuSans.ttf"
             size_hint:.03,.05
@@ -131,17 +144,36 @@
                     rgba: (1, 1, 1, 1)
                 Line:
                     rectangle: self.x, self.y, self.width, self.height
-            text: "Settings"
+            text: " Settings"
+            text_size: self.size
+            halign: "left"
+            valign: "center"
             font_size: root.height/30
-            size_hint:0.97,.05
+            size_hint:0.87,.05
+        Mybutton:
+            text:"Apply"
+            size_hint:.1,.05
+            on_press: root.apply_settings()
         TabbedPanel:
+            background_color: (0, 0, 0, 1)
             size_hint:1,0.95
             do_default_tab: False
             TabbedPanelItem:
                 text: "General"
                 StackLayout:
-                    Label:
-                        text: "AAAAAAA"
+                    CheckboxSetting:
+                        Label:
+                            text: "Maximize on startup"
+                        CheckBox:
+                            active: True
+                            color: (1,0,0,1)
+                            canvas.before:
+                                Color:
+                                    rgb: 1,1,1
+                                Rectangle:
+                                    pos:self.center_x-13, self.center_y-13
+                                    size:[30,30]
+                            on_active: root.maximize_on_startup_setting(self, self.active)
             TabbedPanelItem:
                 text: "Visuals"
             TabbedPanelItem:
@@ -149,6 +181,7 @@
 
 
 <RootScreenManager>:
+    transition: NoTransition()
     size: root.width, root.height
     MainScreen:
         id: mainscreen

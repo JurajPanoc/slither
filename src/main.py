@@ -4,8 +4,8 @@ Config.set('graphics', 'minimum_width', '600')
 Config.set('graphics', 'minimum_height', '400')
 Config.set('graphics', 'window_state', 'maximized') # starts maximized
 
+
 from kivy.app import App # type: ignore
-from kivy.uix.widget import Widget # type: ignore
 from kivy.properties import ObjectProperty # type: ignore
 from kivy.lang import Builder # type: ignore
 from kivy.uix.popup import Popup # type: ignore
@@ -14,8 +14,10 @@ from kivy.core.window import Window # type: ignore
 from kivy.clock import Clock # type: ignore
 from kivy.uix.screenmanager import Screen, ScreenManager # type: ignore
 from kivy.uix.button import Button # type: ignore
+
 from pathlib import Path
 from os import rename
+import json
 
 
 Builder.load_file("main.kv")
@@ -111,9 +113,18 @@ class MainScreen(Screen):
         print(file_content)
 
 class SettingsScreen(Screen):
-    pass
+    settings: dict[str, type] = {"maximize_on_startup" : False, }
 
-class RootScreenManager(ScreenManager): 
+    def maximize_on_startup_setting(self, instance, value: bool):
+        self.settings["maximize_on_startup"] = value
+    
+    def apply_settings(self):
+        with open("settings.json", "w") as outfile:
+            outfile.write(json.dumps(self.settings, indent=4))
+        print("settings saved successfully")
+
+
+class RootScreenManager(ScreenManager):
     pass
 
 
