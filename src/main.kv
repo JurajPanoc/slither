@@ -2,8 +2,8 @@
 #:import Factory kivy.factory.Factory
 #TODO: fix line borders being buggy and dissapearing when scaling the menu
 
-<Button>:
-    canvas.before:
+<Mybutton>:
+    canvas.after:
         Color:
             rgba: (1, 1, 1, 1)
         Line:
@@ -13,11 +13,6 @@
     background_color: (0, 0, 0, 1)
 
 <TextInput>:
-    canvas.before:
-        Color:
-            rgba: (1, 1, 1, 1)
-        Line:
-            rectangle: self.x, self.y, self.width, self.height
     cursor_color: (1, 1, 1, 1)
     foreground_color: (1, 1, 1, 1)
     background_color: (0, 0, 0, 1)
@@ -51,33 +46,37 @@
             size_hint:.5,.2
             on_release: root.dismiss()
 
-<SlLayout>:
+
+<MainScreen>:
     text: text
     StackLayout:
-        size: root.width, root.height
-        Button:
-            text:"File"
-            size_hint:.1,.05
-            on_press: root.file_button()
-        Button:
+        Mybutton:
+            text:"⚙"
+            font_size: root.height/20
+            font_name: "DejaVuSans.ttf"
+            size_hint:.03,.05
+            on_press:
+                root.manager.transition.direction = 'left'
+                root.manager.current = 'Settings'
+        Mybutton:
             text:"[u]S[/u]ave"
             markup:True
             size_hint:.1,.05
             on_press: root.save_file()
-        Button:
+        Mybutton:
             text:"[u]O[/u]pen"
             markup:True
             size_hint:.1,.05
             on_press: root.open_file()
-        Button:
+        Mybutton:
             text:"Open file"
             size_hint:.1,.05
             on_press: root.open_directory()
-        Button:
+        Mybutton:
             text:"Save as"
             size_hint:.1,.05
             on_press: root.save_as_file()
-        Button:
+        Mybutton:
             text:"[u]Q[/u]uit"
             markup:True
             size_hint:.1,.05
@@ -88,12 +87,22 @@
             focus:True
             size_hint:1.0,.85
         TextInput:
+            canvas.before:
+                Color:
+                    rgba: (1, 1, 1, 1)
+                Line:
+                    rectangle: self.x, self.y, self.width, self.height
             id: filename_input
             text: "No file currently open"
             multiline: False
             on_text_validate: root.rename_file()
             size_hint:.5,.05
         TextInput:
+            canvas.before:
+                Color:
+                    rgba: (1, 1, 1, 1)
+                Line:
+                    rectangle: self.x, self.y, self.width, self.height
             id: directory_label
             text: "No open directory"
             readonly: True
@@ -105,3 +114,45 @@
             halign: "left"
             valign: "center"
             size_hint:1,.05
+
+<SettingsScreen>:
+    StackLayout:
+        Mybutton:
+            text: '←'
+            font_size: root.height/20
+            font_name: "DejaVuSans.ttf"
+            size_hint:.03,.05
+            on_press: 
+                root.manager.transition.direction = 'right'
+                root.manager.current = 'Main'
+        Label:
+            canvas.before:
+                Color:
+                    rgba: (1, 1, 1, 1)
+                Line:
+                    rectangle: self.x, self.y, self.width, self.height
+            text: "Settings"
+            font_size: root.height/30
+            size_hint:0.97,.05
+        TabbedPanel:
+            size_hint:1,0.95
+            do_default_tab: False
+            TabbedPanelItem:
+                text: "General"
+                StackLayout:
+                    Label:
+                        text: "AAAAAAA"
+            TabbedPanelItem:
+                text: "Visuals"
+            TabbedPanelItem:
+                text: "More stuff"
+
+
+<RootScreenManager>:
+    size: root.width, root.height
+    MainScreen:
+        id: mainscreen
+        name: "Main"
+    SettingsScreen:
+        id: settingsscreen
+        name: "Settings"

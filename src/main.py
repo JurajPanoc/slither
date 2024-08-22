@@ -12,18 +12,21 @@ from kivy.uix.popup import Popup # type: ignore
 from plyer import filechooser # type: ignore
 from kivy.core.window import Window # type: ignore
 from kivy.clock import Clock # type: ignore
-
+from kivy.uix.screenmanager import Screen, ScreenManager # type: ignore
+from kivy.uix.button import Button # type: ignore
 from pathlib import Path
 from os import rename
 
 
 Builder.load_file("main.kv")
 
+class Mybutton(Button):
+    pass
+
 class QuitPopup(Popup): # defined also here just so the python doesn't freak out and throw an error
     pass
 
-
-class SlLayout(Widget): 
+class MainScreen(Screen):
     text: str = ObjectProperty(None)
     info: str = ObjectProperty(None)
     current_file_path: Path = ObjectProperty(None)
@@ -107,11 +110,17 @@ class SlLayout(Widget):
         file_content = self.text.text
         print(file_content)
 
+class SettingsScreen(Screen):
+    pass
+
+class RootScreenManager(ScreenManager): 
+    pass
+
 
 class SlitherApp(App):
     def build(self):
-        app = SlLayout()
-        Window.bind(on_keyboard=app.on_keyboard)
+        app = RootScreenManager()
+        Window.bind(on_keyboard=app.ids.mainscreen.on_keyboard)
         #do this when adding fullscreen option
         #Window.fullscreen = "auto"
         return app
