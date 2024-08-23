@@ -72,11 +72,6 @@
                 root.manager.transition.direction = 'left'
                 root.manager.current = 'Settings'
         Mybutton:
-            text:"[u]S[/u]ave"
-            markup:True
-            size_hint:.1,.05
-            on_press: root.save_file()
-        Mybutton:
             text:"[u]O[/u]pen"
             markup:True
             size_hint:.1,.05
@@ -86,6 +81,11 @@
             size_hint:.1,.05
             on_press: root.open_directory()
         Mybutton:
+            text:"[u]S[/u]ave"
+            markup:True
+            size_hint:.1,.05
+            on_press: root.save_file()
+        Mybutton:
             text:"Save as"
             size_hint:.1,.05
             on_press: root.save_as_file()
@@ -93,7 +93,7 @@
             text:"[u]Q[/u]uit"
             markup:True
             size_hint:.1,.05
-            on_press: Factory.QuitPopup().open()
+            on_press: root.quit_popup.my_open()
         TextInput:
             id:text
             auto_indent:True
@@ -165,8 +165,7 @@
                         Label:
                             text: "Maximize on startup"
                         CheckBox:
-                            active: True
-                            color: (1,0,0,1)
+                            color: (0,0,0,1)
                             canvas.before:
                                 Color:
                                     rgb: 1,1,1

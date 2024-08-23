@@ -22,17 +22,28 @@ import json
 
 Builder.load_file("main.kv")
 
-class Mybutton(Button):
+class Mybutton(Button): # defined also here just so the python doesn't freak out and throw an error
     pass
 
-class QuitPopup(Popup): # defined also here just so the python doesn't freak out and throw an error
-    pass
+class QuitPopup(Popup):
+    opened: bool = False
+    
+    def on_open(self):
+        self.opened = True
+    
+    def on_dismiss(self):
+        self.opened = False
+
+    def my_open(self):
+        self.open() if self.opened == False else self.dismiss()
+
 
 class MainScreen(Screen):
     text: str = ObjectProperty(None)
     info: str = ObjectProperty(None)
     current_file_path: Path = ObjectProperty(None)
     working_directory: Path = ObjectProperty(None)
+    quit_popup = ObjectProperty(QuitPopup())
 
     def reset_info(self, *args):
         print("AAAAAAAAAAAA")
@@ -44,7 +55,7 @@ class MainScreen(Screen):
         elif "ctrl" in modifier and codepoint == "o":
             self.open_file()
         elif "ctrl" in modifier and codepoint == "q":
-            QuitPopup().open()
+            self.quit_popup.my_open()
 
     def save_file(self):
         if self.current_file_path is None or not self.current_file_path.exists():
@@ -129,6 +140,7 @@ class RootScreenManager(ScreenManager):
 
 
 class SlitherApp(App):
+
     def build(self):
         app = RootScreenManager()
         Window.bind(on_keyboard=app.ids.mainscreen.on_keyboard)
