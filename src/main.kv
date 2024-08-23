@@ -165,6 +165,7 @@
                         Label:
                             text: "Maximize on startup"
                         CheckBox:
+                            state: root.json_settings.get("1check")["value"] if root.json_settings.exists("1check") else "normal"
                             color: (0,0,0,1)
                             canvas.before:
                                 Color:

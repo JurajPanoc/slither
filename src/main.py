@@ -2,8 +2,6 @@ from kivy import Config # type: ignore
 #NOTE: config is up here because it should be the first thing that is run in the file 
 Config.set('graphics', 'minimum_width', '600') 
 Config.set('graphics', 'minimum_height', '400')
-Config.set('graphics', 'window_state', 'maximized') # starts maximized
-
 
 from kivy.app import App # type: ignore
 from kivy.properties import ObjectProperty # type: ignore
@@ -14,16 +12,18 @@ from kivy.core.window import Window # type: ignore
 from kivy.clock import Clock # type: ignore
 from kivy.uix.screenmanager import Screen, ScreenManager # type: ignore
 from kivy.uix.button import Button # type: ignore
+from kivy.storage.jsonstore import JsonStore # type: ignore
 
 from pathlib import Path
 from os import rename
-import json
 
 
 Builder.load_file("main.kv")
 
+
 class Mybutton(Button): # defined also here just so the python doesn't freak out and throw an error
     pass
+
 
 class QuitPopup(Popup):
     opened: bool = False
@@ -124,15 +124,20 @@ class MainScreen(Screen):
         print(file_content)
 
 class SettingsScreen(Screen):
-    settings: dict[str, type] = {"maximize_on_startup" : False, }
+    json_settings = JsonStore('settings.json')
+    settings: dict[str, type] = {"maximize_on_startup" : False}
 
     def maximize_on_startup_setting(self, instance, value: bool):
-        self.settings["maximize_on_startup"] = value
+        if value:
+            Config.set('graphics', 'window_state', 'maximized')
+            self.settings["maximize_on_startup"] = "down"
+        else:
+            Config.set('graphics', 'window_state', 'visible')
+            self.settings["maximize_on_startup"] = "normal"
     
     def apply_settings(self):
-        with open("settings.json", "w") as outfile:
-            outfile.write(json.dumps(self.settings, indent=4))
-        print("settings saved successfully")
+        self.json_settings.put("1check", name="maximize_on_startup", value=self.settings["maximize_on_startup"])
+        Config.write()
 
 
 class RootScreenManager(ScreenManager):
@@ -140,7 +145,6 @@ class RootScreenManager(ScreenManager):
 
 
 class SlitherApp(App):
-
     def build(self):
         app = RootScreenManager()
         Window.bind(on_keyboard=app.ids.mainscreen.on_keyboard)

@@ -1,3 +1,1 @@
-{
-    "maximize_on_startup": false //NOTE: not feasible, the startup config doesn't work if you want to trigger anything before it 
-}
+{"1check": {"name": "maximize_on_startup", "value": "down"}}
