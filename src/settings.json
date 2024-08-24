@@ -1,1 +1,1 @@
-{"1check": {"name": "maximize_on_startup", "value": "down"}}
+{"1check": {"name": "maximize_on_startup", "value": "normal"}, "2check": {"name": "fullscreen", "value": "normal"}, "3check": {"name": "fullscreen_on_startup", "value": "normal"}, "4check": {"name": "always_on_top", "value": "normal"}}

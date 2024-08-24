@@ -18,12 +18,10 @@ from pathlib import Path
 from os import rename
 
 
-Builder.load_file("main.kv")
-
-
 class Mybutton(Button): # defined also here just so the python doesn't freak out and throw an error
     pass
 
+Builder.load_file("main.kv")
 
 class QuitPopup(Popup):
     opened: bool = False
@@ -64,7 +62,7 @@ class MainScreen(Screen):
         with open(self.current_file_path, "w") as file:
             file.write(self.text.text)
         self.ids.info_label.text = "File has been saved successfully!"
-        Clock.schedule_once(self.reset_info, 8) #FIXME: find a way for them to not behave inconsistently (some are faster than others)
+        Clock.schedule_once(self.reset_info, 3) #FIXME: find a way for them to not behave inconsistently (some are faster than others)
     
     def open_file(self):
         filechooser.open_file(on_selection=self.selected_to_open,
@@ -114,18 +112,14 @@ class MainScreen(Screen):
 
     def rename_file(self):
         if self.current_file_path is not None and self.current_file_path.exists():
-            print("renamed", self.current_file_path, str(self.current_file_path.parent) +  "\\" + self.ids.filename_input.text)
             rename(self.current_file_path, str(self.current_file_path.parent) +  "\\" + self.ids.filename_input.text)
             self.ids.info_label.text = "File has been renamed successfully!"
             Clock.schedule_once(self.reset_info, 3)
 
-    def file_button(self):
-        file_content = self.text.text
-        print(file_content)
 
 class SettingsScreen(Screen):
     json_settings = JsonStore('settings.json')
-    settings: dict[str, type] = {"maximize_on_startup" : False}
+    settings: dict[str, type] = {}
 
     def maximize_on_startup_setting(self, instance, value: bool):
         if value:
@@ -135,8 +129,35 @@ class SettingsScreen(Screen):
             Config.set('graphics', 'window_state', 'visible')
             self.settings["maximize_on_startup"] = "normal"
     
+    def fullscreen_setting(self, instance, value: bool):
+        if value:
+            Window.fullscreen = "auto"
+            self.settings["fullscreen"] = "down"
+        else:
+            Window.fullscreen = False
+            self.settings["fullscreen"] = "normal"
+
+    def fullscreen_on_startup_setting(self, instance, value: bool):
+        if value:
+            Config.set('graphics', 'fullscreen', 'auto')
+            self.settings["fullscreen_on_startup"] = "down"
+        else:
+            Config.set('graphics', 'fullscreen', 0)
+            self.settings["fullscreen_on_startup"] = "normal"
+    
+    def always_on_top_setting(self, instance, value: bool):
+        if value:
+            Config.set('graphics', 'always_on_top', 1)
+            self.settings["always_on_top"] = "down"
+        else:
+            Config.set('graphics', 'always_on_top', 0)
+            self.settings["always_on_top"] = "normal"
+
     def apply_settings(self):
-        self.json_settings.put("1check", name="maximize_on_startup", value=self.settings["maximize_on_startup"])
+        self.json_settings.put("1check", name="maximize_on_startup", value=self.settings.get("maximize_on_startup", "normal"))
+        self.json_settings.put("2check", name="fullscreen", value=self.settings.get("fullscreen", "normal"))
+        self.json_settings.put("3check", name="fullscreen_on_startup", value=self.settings.get("fullscreen_on_startup", "normal"))
+        self.json_settings.put("4check", name="always_on_top", value=self.settings.get("always_on_top", "normal"))
         Config.write()
 
 
@@ -145,11 +166,10 @@ class RootScreenManager(ScreenManager):
 
 
 class SlitherApp(App):
+    text_size: int = 20
     def build(self):
         app = RootScreenManager()
         Window.bind(on_keyboard=app.ids.mainscreen.on_keyboard)
-        #do this when adding fullscreen option
-        #Window.fullscreen = "auto"
         return app
 
 
